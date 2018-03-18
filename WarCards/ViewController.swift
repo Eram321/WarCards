@@ -10,6 +10,10 @@ import UIKit
 
 class ViewController: UIViewController {
 
+    let gameViewSegueID = "showGameView"
+    @IBAction func startGameAction(_ sender: Any) {
+        performSegue(withIdentifier: gameViewSegueID, sender: nil)
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
