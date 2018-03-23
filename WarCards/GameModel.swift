@@ -103,13 +103,13 @@ class GameModel{
         }
     }
     
-    func isPlayerWinGame() -> Bool{
+    func isPlayerWinGame() -> String{
         
         if playerScore >= computerScore{
-            return true
+            return "You Win"
         }
         else{
-            return false
+            return "You lose"
         }
     }
     

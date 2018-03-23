@@ -30,7 +30,7 @@ class Deck {
         }
         
         for cardName in cardNames{
-            for i in 2...14{
+            for i in 2...4{
                 let imageName = cardName + "\(i)"
                 let image : UIImage = UIImage(named: imageName)!
                 cards.append(Card(value: i, image: image))

@@ -8,7 +8,7 @@
 
 import UIKit
 
-class GameViewController: UIViewController {
+class GameViewController: UIViewController, MessageReadableWithDelegate {
     
     @IBOutlet weak var computerImageView: UIImageView!
     @IBOutlet weak var playerImageView: UIImageView!
@@ -18,11 +18,28 @@ class GameViewController: UIViewController {
     @IBOutlet weak var playerRemaningCardsLabel: UILabel!
     @IBOutlet weak var computerRemaningCardsLabel: UILabel!
     
+    @IBOutlet weak var gameOverView: UIView!
+    
+    @IBOutlet weak var gameResultLabel: UILabel!
+    @IBOutlet weak var scoreLabel: UILabel!
+    
     var gameModel : GameModel = GameModel()
     
     var imagesSubViews : [UIImageView] = [UIImageView]()
     var lastPlayerPosition : CGPoint = CGPoint()
     var lastComputerPosition : CGPoint = CGPoint()
+    
+    @IBAction func gameOverAction(_ sender: Any) {
+        delegate?.readMessage(message: gameModel.playerScore)
+    }
+    
+    @IBAction func backToMenuAction(_ sender: Any) {
+        delegate?.readMessage(message: 0)
+    }
+    
+    func readMessage(message: Int) {}
+    
+    var delegate: MessageReadable?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -58,28 +75,16 @@ class GameViewController: UIViewController {
         
         if gameModel.lastRoundResult == Result.War{
             
-            var image = roundResult.playerCard?.image
-            if gameModel.isWarPassCard() {
-                image = UIImage(named: "CardBackGreen")!
-            }
-            
+            var image = getCurretCardImage(roundResult: roundResult, playerCard: true)
             let playerView = UIImageView(image: image)
-            playerView.frame = CGRect(x: lastPlayerPosition.x, y: lastPlayerPosition.y, width: 105, height: 142)
+            setWarImageView(imageView: playerView, pos: lastPlayerPosition)
             lastPlayerPosition.y += 25;
             
-            view.addSubview(playerView)
-            imagesSubViews.append(playerView)
-            
-            image = roundResult.computerCard?.image
-            if gameModel.isWarPassCard() {
-                image = UIImage(named: "CardBackRed")!
-            }
+            image = getCurretCardImage(roundResult: roundResult, playerCard: false)
             let computerView = UIImageView(image: image)
-            computerView.frame = CGRect(x: lastComputerPosition.x, y: lastComputerPosition.y, width: 105, height: 142)
+            setWarImageView(imageView: computerView, pos: lastComputerPosition)
             lastComputerPosition.y += 25;
-            
-            view.addSubview(computerView)
-            imagesSubViews.append(computerView)
+
         }
         else{
             computerImageView.image = roundResult.computerCard?.image
@@ -89,6 +94,12 @@ class GameViewController: UIViewController {
         }
         
         setResultUI(roundResult: roundResult)
+        
+        UIView.animate(withDuration: 1, animations: {
+            self.roundResultLabel.transform = CGAffineTransform(scaleX: 1, y: 1)
+        }, completion: { finished in
+            self.roundResultLabel.transform = CGAffineTransform(scaleX: 0, y: 0)
+        })
         
         computerScoreLabel.text = "\(gameModel.computerScore)"
         playerScoreLabel.text = "\(gameModel.playerScore)"
@@ -114,7 +125,11 @@ class GameViewController: UIViewController {
     }
     
     func gameEnd(){
-        roundResultLabel.text = "GameEnd"
+        resetWarImageViews()
+        gameOverView.isHidden = false
+        
+        gameResultLabel.text = gameModel.isPlayerWinGame()
+        scoreLabel.text = "Score : " + "\(gameModel.playerScore)"
     }
     
     func resetWarImageViews(){
@@ -127,9 +142,8 @@ class GameViewController: UIViewController {
         imagesSubViews.removeAll()
     }
     
-    /*
-    func getCurretCar
-        dImage(roundResult : RoundResult, playerCard : Bool) -> UIImage{
+    
+    func getCurretCardImage(roundResult : RoundResult, playerCard : Bool) -> UIImage{
         
         if gameModel.isWarPassCard() {
             if playerCard{ return UIImage(named: "CardBackGreen")!} else {return UIImage(named: "CardBackRed")!}
@@ -145,7 +159,7 @@ class GameViewController: UIViewController {
         view.addSubview(imageView)
         imagesSubViews.append(imageView)
     }
- */
+ 
     /*
     // MARK: - Navigation
 
